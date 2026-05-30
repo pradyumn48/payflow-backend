@@ -1,13 +1,15 @@
 package com.pradyumn.payflow.controller;
 
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pradyumn.payflow.dto.CreateUserRequest;
 import com.pradyumn.payflow.entity.User;
 import com.pradyumn.payflow.service.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -21,7 +23,7 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody CreateUserRequest request){
+    public User createUser(@Valid @RequestBody CreateUserRequest request){
         return userService.createUser(request);
     }
     
