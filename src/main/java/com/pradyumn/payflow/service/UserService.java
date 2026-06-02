@@ -1,9 +1,10 @@
 package com.pradyumn.payflow.service;
 
+import org.springframework.stereotype.Service;
+
 import com.pradyumn.payflow.dto.CreateUserRequest;
 import com.pradyumn.payflow.entity.User;
 import com.pradyumn.payflow.repository.UserRepository;
-import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {

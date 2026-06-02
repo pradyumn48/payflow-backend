@@ -29,4 +29,16 @@ public class GlobalExceptionHandler {
 
         return errors;
     }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(WalletAlreadyExistsException.class)
+    public Map<String, String> handleWalletAlreadyExistsException(
+            WalletAlreadyExistsException ex) {
+
+        Map<String, String> error = new HashMap<>();
+
+        error.put("message", ex.getMessage());
+
+        return error;
+    }
 }
