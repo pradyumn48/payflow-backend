@@ -21,11 +21,9 @@ public class GlobalExceptionHandler {
 
         ex.getBindingResult()
                 .getFieldErrors()
-                .forEach(error ->
-                        errors.put(
-                                error.getField(),
-                                error.getDefaultMessage()
-                        ));
+                .forEach(error -> errors.put(
+                        error.getField(),
+                        error.getDefaultMessage()));
 
         return errors;
     }
@@ -37,6 +35,17 @@ public class GlobalExceptionHandler {
 
         Map<String, String> error = new HashMap<>();
 
+        error.put("message", ex.getMessage());
+
+        return error;
+    }
+
+    @ExceptionHandler(WalletNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleWalletNotFoundException(
+            WalletNotFoundException ex) {
+
+        Map<String, String> error = new HashMap<>();
         error.put("message", ex.getMessage());
 
         return error;
