@@ -14,6 +14,7 @@ import com.pradyumn.payflow.exception.WalletNotFoundException;
 import com.pradyumn.payflow.repository.UserRepository;
 import com.pradyumn.payflow.repository.WalletRepository;
 
+import jakarta.transaction.Transactional;
 
 @Service
 public class WalletService {
@@ -22,46 +23,59 @@ public class WalletService {
     private final UserRepository userRepository;
 
     public WalletService(
-        WalletRepository walletRepository,
-        UserRepository userRepository)
-    {
+            WalletRepository walletRepository,
+            UserRepository userRepository) {
         this.userRepository = userRepository;
         this.walletRepository = walletRepository;
     }
 
-    public Wallet createWallet(CreateWalletRequest request){
+    public Wallet createWallet(CreateWalletRequest request) {
 
-        if(walletRepository.existsByUserId(request.getUserId())){
-        throw new WalletAlreadyExistsException(
-                "Wallet already exists for this user");
+        if (walletRepository.existsByUserId(request.getUserId())) {
+            throw new WalletAlreadyExistsException(
+                    "Wallet already exists for this user");
         }
-        
+
         User user = userRepository.findById(request.getUserId()).orElseThrow();
-        
+
         Wallet wallet = new Wallet();
 
         wallet.setUser(user);
         wallet.setBalance(BigDecimal.ZERO);
-        wallet.setCreatedAt(LocalDateTime.now()); 
-        
+        wallet.setCreatedAt(LocalDateTime.now());
+
         return walletRepository.save(wallet);
-        
+
     }
-    
+
     public WalletResponse getWalletById(Long walletId) {
 
-    Wallet wallet = walletRepository.findById(walletId)
-            .orElseThrow(() -> new WalletNotFoundException("Wallet not found"));
+        Wallet wallet = walletRepository.findById(walletId)
+                .orElseThrow(() -> new WalletNotFoundException("Wallet not found"));
 
-    WalletResponse response = new WalletResponse();
+        WalletResponse response = new WalletResponse();
 
-    response.setId(wallet.getId());
-    response.setBalance(wallet.getBalance());
-    response.setUserId(wallet.getUser().getId());
-    response.setUserName(wallet.getUser().getName());
-    response.setCreatedAt(wallet.getCreatedAt());
+        response.setId(wallet.getId());
+        response.setBalance(wallet.getBalance());
+        response.setUserId(wallet.getUser().getId());
+        response.setUserName(wallet.getUser().getName());
+        response.setCreatedAt(wallet.getCreatedAt());
 
-    return response;
-}
-    
+        return response;
+    }
+
+    @Transactional
+    public Wallet depositMoney(
+            Long walletId,
+            BigDecimal amount) {
+
+        Wallet wallet = walletRepository.findById(walletId)
+                .orElseThrow(() -> new WalletNotFoundException(
+                        "Wallet not found"));
+
+        wallet.setBalance(
+                wallet.getBalance().add(amount));
+
+        return walletRepository.save(wallet);
+    }
 }

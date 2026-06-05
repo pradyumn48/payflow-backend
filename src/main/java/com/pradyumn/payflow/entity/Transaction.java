@@ -1,11 +1,18 @@
 package com.pradyumn.payflow.entity;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -17,9 +24,13 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long senderWalletId;
+    @ManyToOne
+    @JoinColumn(name = "sender_wallet_id", nullable = false)
+    private Wallet senderWallet;
 
-    private Long receiverWalletId;
+    @ManyToOne
+    @JoinColumn(name = "receiver_wallet_id", nullable = false)
+    private Wallet receiverWallet;
 
     private BigDecimal amount;
 

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pradyumn.payflow.dto.CreateWalletRequest;
+import com.pradyumn.payflow.dto.DepositRequest;
 import com.pradyumn.payflow.dto.WalletResponse;
 import com.pradyumn.payflow.entity.Wallet;
 import com.pradyumn.payflow.service.WalletService;
@@ -18,7 +19,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/wallets")
 public class WalletController {
 
-    private final WalletService     walletService;
+    private final WalletService walletService;
 
     public WalletController(WalletService walletService) {
         this.walletService = walletService;
@@ -33,8 +34,18 @@ public class WalletController {
 
     @GetMapping("/{id}")
     public WalletResponse getWalletById(
-        @PathVariable Long id) {
+            @PathVariable Long id) {
 
         return walletService.getWalletById(id);
+    }
+
+    @PostMapping("/{id}/deposit")
+    public Wallet depositMoney(
+            @PathVariable Long id,
+            @Valid @RequestBody DepositRequest request) {
+
+        return walletService.depositMoney(
+                id,
+                request.getAmount());
     }
 }
