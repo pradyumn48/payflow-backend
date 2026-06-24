@@ -25,18 +25,26 @@ public class WalletService {
     public WalletService(
             WalletRepository walletRepository,
             UserRepository userRepository) {
-        this.userRepository = userRepository;
+
         this.walletRepository = walletRepository;
+        this.userRepository = userRepository;
     }
 
-    public Wallet createWallet(CreateWalletRequest request) {
+    public WalletResponse createWallet(
+            CreateWalletRequest request) {
 
-        if (walletRepository.existsByUserId(request.getUserId())) {
+        if (walletRepository.existsByUserId(
+                request.getUserId())) {
+
             throw new WalletAlreadyExistsException(
                     "Wallet already exists for this user");
         }
 
-        User user = userRepository.findById(request.getUserId()).orElseThrow();
+        User user = userRepository.findById(
+                request.getUserId())
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "User not found"));
 
         Wallet wallet = new Wallet();
 
@@ -44,22 +52,55 @@ public class WalletService {
         wallet.setBalance(BigDecimal.ZERO);
         wallet.setCreatedAt(LocalDateTime.now());
 
-        return walletRepository.save(wallet);
+        Wallet savedWallet =
+                walletRepository.save(wallet);
 
+        WalletResponse response =
+                new WalletResponse();
+
+        response.setWalletId(
+                savedWallet.getId());
+
+        response.setUserId(
+                user.getId());
+
+        response.setUserName(
+                user.getName());
+
+        response.setBalance(
+                savedWallet.getBalance());
+
+        response.setCreatedAt(
+                savedWallet.getCreatedAt());
+
+        return response;
     }
 
-    public WalletResponse getWalletById(Long walletId) {
+    public WalletResponse getWalletById(
+            Long walletId) {
 
         Wallet wallet = walletRepository.findById(walletId)
-                .orElseThrow(() -> new WalletNotFoundException("Wallet not found"));
+                .orElseThrow(() ->
+                        new WalletNotFoundException(
+                                "Wallet not found"));
 
-        WalletResponse response = new WalletResponse();
+        WalletResponse response =
+                new WalletResponse();
 
-        response.setId(wallet.getId());
-        response.setBalance(wallet.getBalance());
-        response.setUserId(wallet.getUser().getId());
-        response.setUserName(wallet.getUser().getName());
-        response.setCreatedAt(wallet.getCreatedAt());
+        response.setWalletId(
+                wallet.getId());
+
+        response.setUserId(
+                wallet.getUser().getId());
+
+        response.setUserName(
+                wallet.getUser().getName());
+
+        response.setBalance(
+                wallet.getBalance());
+
+        response.setCreatedAt(
+                wallet.getCreatedAt());
 
         return response;
     }
@@ -69,9 +110,11 @@ public class WalletService {
             Long walletId,
             BigDecimal amount) {
 
-        Wallet wallet = walletRepository.findById(walletId)
-                .orElseThrow(() -> new WalletNotFoundException(
-                        "Wallet not found"));
+        Wallet wallet = walletRepository.findById(
+                walletId)
+                .orElseThrow(() ->
+                        new WalletNotFoundException(
+                                "Wallet not found"));
 
         wallet.setBalance(
                 wallet.getBalance().add(amount));
