@@ -1,5 +1,7 @@
 package com.pradyumn.payflow.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +36,8 @@ public class UserService {
                 passwordEncoder.encode(
                         userRequest.getPassword()));
 
-        user.setRole("USER");
+        user.setRole("ROLE_USER");
+        user.setCreatedAt(LocalDateTime.now());
 
         return userRepository.save(user);
     }
